@@ -75,7 +75,7 @@ plt.pause(0.001)
 
 结果如图
 
-![Figure_1](.\result_img\Figure_1.png)
+![Figure_1](./result_img/Figure_1.png)
 
 ##### 各区二手房数量所占比例，绘制区域二手房数据及占比分析饼状图
 
@@ -98,11 +98,38 @@ def number_proportion():
 
 结果如图
 
-![Figure_1](.\result_img\Figure_2.png)
+![Figure_1](./result_img/Figure_2.png)
 
 ##### 全市二手房装修程度分析，绘制装修程度的条形图
 
+定义`data_analysis.py`中的`house_decoration()`函数，只需要根据区域进行分组，统计每个区域取值的出现次数，并绘制饼状图
 
+```python
+# 全市二手房装修程度分析
+# done
+def house_decoration():
+    data3 = data['装修'].value_counts()
+
+    # 可视化
+    # 创建条形图
+    plt.close()  # 关闭当前图像窗口
+    ax = data3.plot.bar()
+
+    # 添加标题和轴标签
+    plt.title('全市二手房装修程度分析')
+    plt.xlabel('装修', fontsize=15)
+    plt.ylabel('套数', fontsize=15)
+    plt.xticks(fontsize=12, rotation=0)  # 旋转30度
+    plt.yticks(fontsize=12)
+    # 在每个柱子上显示数值
+    for a, b in enumerate(data3):
+        plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
+
+    # 显示图表
+    plt.draw()
+    plt.pause(0.001)
+
+```
 
 结果如图
 

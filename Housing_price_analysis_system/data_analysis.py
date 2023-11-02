@@ -7,6 +7,11 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import re
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.metrics import mean_squared_error
+
 
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
 plt.rcParams['axes.unicode_minus'] = False  # 正确输出负数
@@ -137,8 +142,44 @@ def type_average_price():
 
 # 二手房售价预测
 def price_prediction():
-    print("5")
+    plt.close()  # 关闭当前图像窗口
+    # 要预测的列
+    target = '总价'
+
+    # 选择特征列
+    features = ['户型', '建筑面积', '朝向', '装修']
+
+    X = data[features]
+    y = data[target]
+
+    # 对分类数据进行OneHot编码
+    X = pd.get_dummies(X, columns=['户型', '朝向', '装修'])
+
+    # 拆分数据为训练集和测试集
+    X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+
+    # 创建并训练模型
+    model = LinearRegression()
+    model.fit(X_train, y_train)
+
+    # 预测
+    y_pred = model.predict(X_test)
+
+    # 绘制实际值和预测值的对比折线图
+    plt.figure(figsize=(12, 6))
+    plt.plot(y_test.values, label='Actual Price', color='blue', marker='o')
+    plt.plot(y_pred, label='Predicted Price', color='red', linestyle='dashed', marker='x')
+    plt.title('Actual Price vs Predicted Price')
+    plt.ylabel('Price')
+    plt.xlabel('Index')
+    plt.legend()
+    plt.show()
+
+    # 计算预测误差
+    # mse = mean_squared_error(y_test, y_pred)
+    # print(f"Mean Squared Error: {mse}")
+    # print("5")
 
 
 if __name__ == '__main__':
-    number_proportion()
+    price_prediction()
