@@ -106,7 +106,7 @@ def number_proportion():
 
 结果如图
 
-![Figure_1](.\result_img\Figure_3.png)
+![Figure_1](./result_img/Figure_3.png)
 
 ##### 热门户型均价分析，绘制热门户型均价的条形图
 
@@ -129,7 +129,7 @@ def number_proportion():
 
 结果如图
 
-![Figure_1](.\result_img\Figure_4.png)
+![Figure_1](./result_img/Figure_4.png)
 
 ##### 二手房售价预测
 
