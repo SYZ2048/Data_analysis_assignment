@@ -40,6 +40,7 @@ def average_price():
 
     # 可视化
     # 创建条形图
+    plt.close()  # 关闭当前图像窗口
     ax = data1.plot.bar()
 
     # 添加标题和轴标签
@@ -53,7 +54,8 @@ def average_price():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.show()
+    plt.draw()
+    plt.pause(0.001)
 
 
 # 各区二手房数量所占比例
@@ -62,12 +64,14 @@ def number_proportion():
     data2 = data['区域'].value_counts()
 
     # 创建饼状图
+    plt.close()  # 关闭当前图像窗口
     data2.plot(kind='pie', autopct='%1.1f%%', startangle=90)
     plt.legend(data2.index, title="图例", loc="upper right", bbox_to_anchor=(1.3, 1.1))
 
     plt.title("各区二手房数量所占比例")
     plt.ylabel('')  # 这将删除标签“values”，使图看起来更干净
-    plt.show()
+    plt.draw()
+    plt.pause(0.001)
 
     # print(data2)
 
@@ -79,6 +83,7 @@ def house_decoration():
 
     # 可视化
     # 创建条形图
+    plt.close()  # 关闭当前图像窗口
     ax = data3.plot.bar()
 
     # 添加标题和轴标签
@@ -92,7 +97,8 @@ def house_decoration():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.show()
+    plt.draw()
+    plt.pause(0.001)
 
 
 # 热门户型均价分析
@@ -111,6 +117,7 @@ def type_average_price():
 
     # 可视化
     # 创建条形图
+    plt.close()  # 关闭当前图像窗口
     ax = data4.plot.bar()
 
     # 添加标题和轴标签
@@ -124,7 +131,8 @@ def type_average_price():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.show()
+    plt.draw()
+    plt.pause(0.001)
 
 
 # 二手房售价预测
