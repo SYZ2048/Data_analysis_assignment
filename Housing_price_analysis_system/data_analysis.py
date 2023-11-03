@@ -9,8 +9,6 @@ import pandas as pd
 import re
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.metrics import mean_squared_error
 
 
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
@@ -18,12 +16,10 @@ plt.rcParams['axes.unicode_minus'] = False  # 正确输出负数
 
 data = pd.read_csv('data.csv')
 pd.options.mode.chained_assignment = None  # default='warn'
-# print(data.shape)   # (2583, 10)
-# print(data)
 
-
+# 数据清洗和预处理
 # 发现有一整行记录为空值  ---> delete the row
-data.drop(data.columns[0], axis=1, inplace=True)
+data.drop(data.columns[0], axis=1, inplace=True)    # 清除第一列
 data.dropna(how='all', inplace=True)  # 清除全为空的行
 
 data['总价'] = [re.sub('[^0-9.]', '', price) for price in data['总价']]
@@ -32,9 +28,6 @@ data['单价'] = [re.sub('[^0-9.]', '', price_per) for price_per in data['单价
 # Index(['小区名字', '总价', '户型', '建筑面积', '单价', '朝向', '楼层', '装修', '区域'], dtype='object')
 data['总价'] = data['总价'].astype(float)
 data['单价'] = data['单价'].astype(float)
-
-# filepath = 'data_cleaned.xlsx'
-# cleaned.to_excel(filepath, index=False)
 
 
 # 各区二手房均价分析
@@ -59,8 +52,7 @@ def average_price():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.draw()
-    plt.pause(0.001)
+    plt.show()
 
 
 # 各区二手房数量所占比例
@@ -74,9 +66,8 @@ def number_proportion():
     plt.legend(data2.index, title="图例", loc="upper right", bbox_to_anchor=(1.3, 1.1))
 
     plt.title("各区二手房数量所占比例")
-    plt.ylabel('')  # 这将删除标签“values”，使图看起来更干净
-    plt.draw()
-    plt.pause(0.001)
+    plt.ylabel('')  # 删除标签“values”
+    plt.show()
 
     # print(data2)
 
@@ -102,8 +93,7 @@ def house_decoration():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.draw()
-    plt.pause(0.001)
+    plt.show()
 
 
 # 热门户型均价分析
@@ -118,7 +108,6 @@ def type_average_price():
     # print(popular_type)
     data4 = data.groupby(['户型'])['单价'].mean()
     data4 = data4[popular_type]
-
 
     # 可视化
     # 创建条形图
@@ -136,8 +125,7 @@ def type_average_price():
         plt.text(a, b, int(b), ha='center', va='bottom', fontsize=12)
 
     # 显示图表
-    plt.draw()
-    plt.pause(0.001)
+    plt.show()
 
 
 # 二手房售价预测
@@ -152,7 +140,9 @@ def price_prediction():
     X = data[features]
     y = data[target]
 
-    # 对分类数据进行OneHot编码
+    # 对于字符型的特征，我们并不能将其直接传输网络模型中进行训练，需要对分类数据进行OneHot（独热)编码
+    # Convert categorical variable into dummy/indicator variables.
+    # Each variable is converted in as many 0/1 variables as there are different values.
     X = pd.get_dummies(X, columns=['户型', '朝向', '装修'])
 
     # 拆分数据为训练集和测试集
@@ -167,17 +157,14 @@ def price_prediction():
 
     # 绘制实际值和预测值的对比折线图
     plt.figure(figsize=(12, 6))
-    plt.plot(y_test.values, label='Actual Price', color='blue', marker='o')
-    plt.plot(y_pred, label='Predicted Price', color='red', linestyle='dashed', marker='x')
-    plt.title('Actual Price vs Predicted Price')
-    plt.ylabel('Price')
-    plt.xlabel('Index')
+    plt.plot(y_test.values, label='实际价格', color='blue', marker='o')
+    plt.plot(y_pred, label='预测价格', color='red', linestyle='dashed', marker='x')
+    plt.title('二手房售价预测')
+    plt.ylabel('价格')
+    plt.xlabel('房屋编号')
     plt.legend()
     plt.show()
 
-    # 计算预测误差
-    # mse = mean_squared_error(y_test, y_pred)
-    # print(f"Mean Squared Error: {mse}")
     # print("5")
 
 
