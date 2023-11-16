@@ -10,6 +10,19 @@
 python Housing_price_analysis_system/main.py
 ```
 
+##### 文件夹结构
+
+```
+-img/									存储前端系统所需的图像
+-result_img/							存储不同功能可视化后得到的图像结果
+-data.csv								原始数据
+-data_analysis.py						定义原始数据进行处理和可视化的函数
+-main.py								程序入口，调用system_menu中定义的类，关联前端系统和实现函数
+-Readme.pdf								本文档，阐述系统相关功能和实现
+-system_menu.py							通过PyUIC转换system_menu.ui得到的同名python文件
+-system_menu.ui							通过Qt5 designer设计得到的系统前端界面
+```
+
 ##### 库支持
 
 ```
@@ -190,6 +203,7 @@ popular_type = num_per_type[0:6].index.tolist()
 3室1厅1卫     43
 2室2厅2卫     38
 4室3厅3卫     20
+......
 ```
 
 对于选取的户型统计平均单价
