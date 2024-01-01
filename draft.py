@@ -1,20 +1,14 @@
-import pandas as pd
-import numpy as np
+# Re-calculate the confidence interval for theta when M = 3
+# Solving for theta using the CDF formula for the maximum of uniform distributions
 
-df = pd.DataFrame({'key1': ['a', 'a', 'b', 'b', 'a'],
-                   'key2': ['one', 'two', 'one', 'two', 'one'],
-                   'data1': np.random.randn(5), 'data2': np.random.randn(5)})
-grouped = df['data1'].groupby(df['key1'])
+# Given M value for calculation
+M_observed = 3
 
-grouped = df.groupby(df.dtypes, axis=1)
-df1 = df.groupby('key1')['data1']
-df2 = df.groupby('key1')[['data2']]
-people = pd.DataFrame(np.random.randn(5, 5),
-                      columns=['a', 'b', 'c', 'd', 'e'],
-                      index=['Joe', 'Steve', 'Wes', 'Jim', 'Travis'])
-# print(people)
-key_list = ['one', 'one', 'one', 'two', 'two']
-grouped = df.groupby('key1')
-print(grouped['data1'].quantile(0.9))
+# Calculate the confidence interval for theta using the percentiles for a 90% confidence interval
+# We find theta for the 5th percentile (lower bound of theta)
+theta_5th_percentile = M_observed / (lower_percentile ** (1/12))
 
+# We find theta for the 95th percentile (upper bound of theta)
+theta_95th_percentile = M_observed / (upper_percentile ** (1/12))
 
+theta_5th_percentile, theta_95th_percentile
