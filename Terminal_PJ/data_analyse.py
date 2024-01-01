@@ -83,24 +83,27 @@ def location_statistics():
     plt.show()
 
 
-def weather_collision():
+def weather_statistics():
     weather = collisions.copy()
     # 数据清洗
     # 删除weather1列中含有空值的行
-    weather.dropna(subset=['weather1'], inplace=True)
+    weather.dropna(subset=['weather_1'], inplace=True)
     # 按weather1分组并统计数量
-    yearly_counts = weather.groupby('YEAR').size()
+    weather_counts = weather.groupby('weather_1').size()
     # 可视化
-    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(15, 6))
+    fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
     # 年份统计
-    weather.plot(kind='line', ax=axes[0])
-    axes[0].scatter(yearly_counts.index, yearly_counts.values, marker='o', linestyle='-', c='g')
-    axes[0].set_title('Number of Collisions by Year')
-    axes[0].set_xlabel('Year')
-    axes[0].set_ylabel('Number of Collisions')
-    axes[0].xaxis.set_major_locator(MaxNLocator(integer=True))  # 控制横坐标间隔为整数
+    weather_counts.plot(kind='bar')
+    axes.set_title('Number of Collisions in Weathers')
+    axes.set_xlabel('Weather')
+    axes.set_ylabel('Number of Collisions')
+    # 在每个柱上显示数据
+    for i, value in enumerate(weather_counts):
+        axes.text(i, value, str(value), ha='center', va='bottom')
+    axes.set_xticklabels(weather_counts.index, rotation=0)
+    plt.show()
 
-
+weather_statistics()
 # location_statistics()
 # time_statistics()
 
