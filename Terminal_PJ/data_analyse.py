@@ -17,15 +17,15 @@ pd.options.mode.chained_assignment = None  # default='warn'
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
 plt.rcParams['axes.unicode_minus'] = False  # 正确输出负数
 
-
 filepath = './traffic_data/'
 collisions = pd.read_csv(filepath + 'collisions.csv')
 parties = pd.read_csv(filepath + 'parties.csv')
 victims = pd.read_csv(filepath + 'victims.csv')
 
 
-def data_clean():
-    collisions.dropna(how='all', inplace=True)  # 清除全为空的行
+collisions.dropna(how='all', inplace=True)  # 清除全为空的行
+parties.dropna(how='all', inplace=True)  # 清除全为空的行
+victims.dropna(how='all', inplace=True)  # 清除全为空的行
 
 
 def time_statistics():
@@ -86,25 +86,32 @@ def location_statistics():
 def weather_statistics():
     weather = collisions.copy()
     # 数据清洗
-    # 删除weather1列中含有空值的行
-    weather.dropna(subset=['weather_1'], inplace=True)
-    # 按weather1分组并统计数量
-    weather_counts = weather.groupby('weather_1').size()
+    # 替换其中空的数据为-，每个事故信息含[0,2]个天气信息
+    weather[['weather_1', 'weather_2']] = weather[['weather_1', 'weather_2']].replace(np.nan, '-')
+    # 按(weather1,weather2)分组并统计数量
+    weather_counts = weather.groupby(['weather_1', 'weather_2']).size()
+    # print(weather_counts)
+    weather_condition_type = weather_counts[0:10].index.tolist()
+    weather_condition = weather_counts.nlargest(10)
+    # print(weather_condition)
+
     # 可视化
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
     # 年份统计
-    weather_counts.plot(kind='bar')
+    weather_condition.plot(kind='bar')
     axes.set_title('Number of Collisions in Weathers')
     axes.set_xlabel('Weather')
     axes.set_ylabel('Number of Collisions')
     # 在每个柱上显示数据
-    for i, value in enumerate(weather_counts):
+    for i, value in enumerate(weather_condition):
         axes.text(i, value, str(value), ha='center', va='bottom')
-    axes.set_xticklabels(weather_counts.index, rotation=0)
+    axes.set_xticklabels(weather_condition.index, rotation=30)
     plt.show()
 
-weather_statistics()
+
+def
+
+
 # location_statistics()
 # time_statistics()
-
-
+# weather_statistics()
