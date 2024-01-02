@@ -2,7 +2,7 @@
 # -*- coding: UTF-8 -*-
 """
 @Project ：Terminal_PJ 
-@File    ：data_analyse.py
+@File    ：collision_analyse.py
 @IDE     ：PyCharm 
 @Author  ：SYZ
 @Date    ：2023/12/13 21:58 
@@ -12,6 +12,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
+import seaborn as sns
+from scipy.stats import chi2_contingency
 
 pd.options.mode.chained_assignment = None  # default='warn'
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
@@ -19,13 +21,7 @@ plt.rcParams['axes.unicode_minus'] = False  # 正确输出负数
 
 filepath = './traffic_data/'
 collisions = pd.read_csv(filepath + 'collisions.csv')
-parties = pd.read_csv(filepath + 'parties.csv')
-victims = pd.read_csv(filepath + 'victims.csv')
-
-
 collisions.dropna(how='all', inplace=True)  # 清除全为空的行
-parties.dropna(how='all', inplace=True)  # 清除全为空的行
-victims.dropna(how='all', inplace=True)  # 清除全为空的行
 
 
 def time_statistics():
@@ -109,9 +105,12 @@ def weather_statistics():
     plt.show()
 
 
-def
+
+def alcohol_involved2injured():
 
 
 # location_statistics()
 # time_statistics()
 # weather_statistics()
+# victim_position()
+# factors2injury_degree()
