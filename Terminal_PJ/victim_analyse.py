@@ -109,8 +109,6 @@ def factors2injury_degree():
     # Statistic: 4247.944239138149
     # P - value: 0.0
 
-# location_statistics()
-# time_statistics()
-# weather_statistics()
+
 # victim_position()
 # factors2injury_degree()
