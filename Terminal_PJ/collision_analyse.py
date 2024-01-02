@@ -105,12 +105,29 @@ def weather_statistics():
     plt.show()
 
 
-
 def alcohol_involved2injured():
+    # 计算伤亡总数
+    casualties = collisions.copy()
+    # 处理alcohol_involved列
+    casualties['alcohol_involved'] = casualties['alcohol_involved'].fillna(0)
+
+    casualties['total_casualties'] = (
+            casualties['severe_injury_count'] +
+            casualties['other_visible_injury_count'] +
+            casualties['complaint_of_pain_injury_count'] +
+            casualties['pedestrian_killed_count'] +
+            casualties['pedestrian_injured_count'] +
+            casualties['bicyclist_killed_count'] +
+            casualties['bicyclist_injured_count'] +
+            casualties['motorcyclist_killed_count'] +
+            casualties['motorcyclist_injured_count']
+    )
+    # 计算相关性
+    correlation = casualties['total_casualties'].corr(casualties['alcohol_involved'])
+    print("Correlation between total casualties and alcohol involvement:", correlation)
 
 
 # location_statistics()
 # time_statistics()
 # weather_statistics()
-# victim_position()
-# factors2injury_degree()
+alcohol_involved2injured()
