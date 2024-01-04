@@ -9,25 +9,19 @@
 """
 
 import pandas as pd
-from pandas_datareader import data as pdr
-from datetime import datetime
 import sqlite3
 
 # Connect to SQLite database
 filename = './traffic_data/switrs.sqlite'   # # table: case_ids\collisions\victims\parties
 conn = sqlite3.connect(filename)
 
-# Create a cursor object
+# Create a cursor object 游标
 cursor = conn.cursor()
 
-# # Query for all table names
 # cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-#     print(table[0])
-# # Execute a query
 # cursor.execute("SELECT * FROM collisions")
 # # Fetch all rows from the query
 # rows = cursor.fetchall()
-# print(rows[0:20])
 
 # 只选取摩托车交通事故中的参与方
 parties_query = " SELECT * FROM parties WHERE case_id IN \
@@ -39,6 +33,7 @@ victims_query = " SELECT * FROM victims WHERE case_id IN \
 
 # 只选取摩托车交通事故
 collisions_query = "SELECT * FROM collisions WHERE motorcycle_collision == 1"
+
 # Read the data
 collisions = pd.read_sql_query(collisions_query, conn)
 parties = pd.read_sql_query(parties_query, conn)
