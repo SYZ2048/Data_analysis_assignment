@@ -13,7 +13,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib.ticker import MaxNLocator
 import seaborn as sns
-from scipy.stats import chi2_contingency
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+from collections import Counter
+
 
 pd.options.mode.chained_assignment = None  # default='warn'
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
@@ -30,13 +39,13 @@ def time_statistics():
     # 将COLLISION_DATE转换为日期格式，并提取年份
     # print(time_collision['collision_date'][0])
     time_collision['collision_date'] = pd.to_datetime(time_collision['collision_date'])
-    time_collision['YEAR'] = time_collision['collision_date'].dt.year
+    time_collision['Year'] = time_collision['collision_date'].dt.year
 
     # 将COLLISION_TIME转换为时间格式，并提取小时
     time_collision['collision_time'] = pd.to_datetime(time_collision['collision_time'], format='%H:%M:%S').dt.hour
 
     # 按年份分组并统计数量
-    yearly_counts = time_collision.groupby('YEAR').size()
+    yearly_counts = time_collision.groupby('Year').size()
     print(yearly_counts)
     # 按小时分组并统计数量
     hourly_counts = time_collision.groupby('collision_time').size()
@@ -105,29 +114,115 @@ def weather_statistics():
     plt.show()
 
 
-def alcohol_involved2injured():
-    # 计算伤亡总数
-    casualties = collisions.copy()
-    # 处理alcohol_involved列
-    casualties['alcohol_involved'] = casualties['alcohol_involved'].fillna(0)
+def predict_severity():
+    severity = collisions.copy()
+    # severity.dropna(subset=['killed_victims'], inplace=True)
+    severity['killed_victims'].fillna(0, inplace=True)
+    severity['alcohol_involved'].fillna(0, inplace=True)
+    severity['fatal'] = np.where((severity['killed_victims'] > 0) | (severity['injured_victims'] > 3), 1, 0)
 
-    casualties['total_casualties'] = (
-            casualties['severe_injury_count'] +
-            casualties['other_visible_injury_count'] +
-            casualties['complaint_of_pain_injury_count'] +
-            casualties['pedestrian_killed_count'] +
-            casualties['pedestrian_injured_count'] +
-            casualties['bicyclist_killed_count'] +
-            casualties['bicyclist_injured_count'] +
-            casualties['motorcyclist_killed_count'] +
-            casualties['motorcyclist_injured_count']
+    # conditions = [
+    #     (severity['lighting'] == 'dark with no street lights') | (
+    #                 severity['lighting'] == 'dark with street lights not functioning'),
+    #     (severity['lighting'] == 'dark with street lights') | (severity['lighting'] == 'dusk or dawn'),
+    #     (severity['lighting'] == 'daylight')
+    # ]
+    # choices = ['dark', 'mid', 'light']
+    # severity['light'] = np.select(conditions, choices, default='unknown')
+
+    target = 'fatal'
+    features = ['alcohol_involved', 'road_surface', 'lighting', 'control_device',
+                'pedestrian_collision', 'bicycle_collision', 'motorcycle_collision', 'truck_collision']
+    one_hot_encoder = OneHotEncoder()
+    preprocessor = ColumnTransformer(
+        transformers=[
+            ('onehot', one_hot_encoder, features)
+        ],
+        remainder='passthrough'  # 不对其他列进行转换
     )
-    # 计算相关性
-    correlation = casualties['total_casualties'].corr(casualties['alcohol_involved'])
-    print("Correlation between total casualties and alcohol involvement:", correlation)
+
+    # 创建逻辑回归模型
+    model = LogisticRegression()
+    pipeline = Pipeline(steps=[('preprocessor', preprocessor),
+                               ('model', model)])
+
+    # 特征和目标变量
+    X = severity[features]
+    y = severity[target].apply(lambda x: 1 if x > 0 else 0)  # 假设 fatal 列需要转换为二元标签
+
+    # 训练
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+    pipeline.fit(X_train, y_train)
+    predictions = pipeline.predict(X_test)
+    print(Counter(predictions)) # Counter({0: 55726, 1: 11})
+    print(Counter(y_test))  # Counter({0: 53988, 1: 1749})
+    # 输出预测结果的评估
+    print(classification_report(y_test, predictions))
+
+
+
+    # severity['killed_victims'] = severity['killed_victims'].astype(float)
+    # fatal = np.array([1 if x > 0 else 0 for x in severity['killed_victims']])
+    #
+    # # lighting
+    # dark = ['dark with no street lights', 'dark with street lights not functioning']
+    # mid = ['dark with street lights', 'dusk or dawn']
+    # light = ['daylight']
+    # lighting = np.zeros(len(severity))
+    # for i, x in enumerate(severity['lighting']):
+    #     if x in dark:
+    #         lighting[i] = 2
+    #     elif x in mid:
+    #         lighting[i] = 1
+    #     elif x in light:
+    #         lighting[i] = 0
+    #
+    # # road_surface
+    # road_surface = np.zeros(len(severity))
+    # for i, x in enumerate(severity['road_surface']):
+    #     if x == 'dry':
+    #         road_surface[i] = 0
+    #     elif x == 'wet':
+    #         road_surface[i] = 1
+    #     elif x == 'slippery':
+    #         road_surface[i] = 2
+    #     elif x == 'snowy':
+    #         road_surface[i] = 3
+    #     else:
+    #         road_surface[i] = 4
+    #
+    # # alcohol
+    # alcohol = np.array([1 if x == '1.0' else 0 for x in severity['alcohol_involved']])
+    #
+    # # pedestrian collision
+    # pedestrian = np.array([1 if x == '1.0' else 0 for x in collisions['pedestrian_collision']])
+    #
+    # # control device:
+    # devices = ['functioning', 'none']
+    # cd = np.array([1 if x in devices else 0 for x in collisions['control_device']])
+    #
+    # # 将特征组合成一个矩阵
+    # features = np.column_stack((alcohol, road_surface, lighting, pedestrian, cd))
+    #
+    # # 划分训练集和测试集
+    # # test_size=0.3 表示30%的数据用作测试集，70%用作训练集
+    # # random_state 是随机数生成器的种子，确保每次运行代码时分割方式相同
+    # X_train, X_test, y_train, y_test = train_test_split(features, fatal, test_size=0.25, random_state=42)
+    #
+    # # 创建逻辑回归模型
+    # model = LogisticRegression()
+    # model.fit(X_train, y_train)
+    # predictions = model.predict(X_test)
+    # print((predictions == 0).sum())
+    # print((predictions == 1).sum())
+    #
+    #
+    # # 输出预测结果的评估
+    # print("Classification Report:")
+    # print(classification_report(y_test, predictions))
 
 
 # location_statistics()
 # time_statistics()
 # weather_statistics()
-alcohol_involved2injured()
+predict_severity()
