@@ -36,13 +36,16 @@ def victim_position():
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
     # 年份统计
     victim_pos_counts.plot(kind='bar')
-    axes.set_title('Number of Victims in Seating Positions')
-    axes.set_xlabel('Victim Seating Position')
-    axes.set_ylabel('Number of Victims')
+    axes.set_title('Number of Victims in Seating Positions', fontsize=18)
+    axes.set_xlabel('Victim Seating Position', fontsize=18)
+    axes.set_ylabel('Number of Victims', fontsize=18)
     # 在每个柱上显示数据
     for i, value in enumerate(victim_pos_counts):
         axes.text(i, value, str(value), ha='center', va='bottom')
     axes.set_xticklabels(victim_pos_counts.index, rotation=20)
+    # 调整刻度大小
+    plt.tick_params(axis='x', labelsize=13)  # 调整X轴标注点大小
+    plt.tick_params(axis='y', labelsize=24)  # 调整Y轴标注点大小
     plt.show()
 
 

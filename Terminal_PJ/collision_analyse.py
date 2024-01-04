@@ -68,6 +68,9 @@ def time_statistics():
     axes[1].set_xticks(range(0, 24))
     axes[1].set_xticks(np.arange(0, 24, 1))  # 控制小时间隔为1小时
     plt.tight_layout()
+    # 调整刻度大小
+    axes[0].tick_params(axis='x', labelsize=16)  # 调整X轴标注点大小
+    axes[1].tick_params(axis='x', labelsize=16)  # 调整X轴标注点大小
     plt.show()
 
 
@@ -91,13 +94,16 @@ def location_statistics():
     fig, ax = plt.subplots()
     ax.scatter(position['longitude'], position['latitude'], s=3)
     for city, (lon, lat) in cities.items():
-        ax.scatter(lon, lat, color='black', zorder=5)
-        ax.text(lon, lat+0.2, city, color='black', fontsize=12, ha='center', va='center')
+        ax.scatter(lon, lat, color='red', zorder=5)
+        ax.text(lon, lat+0.2, city, color='black', fontsize=20, ha='center', va='center')
 
     # 设置标签
-    ax.set_xlabel('Longitude')
-    ax.set_ylabel('Latitude')
-    ax.set_title('Collision Positions')
+    ax.set_xlabel('Longitude', fontsize=18)
+    ax.set_ylabel('Latitude', fontsize=18)
+    ax.set_title('Collision Positions', fontsize=18)
+    # 调整刻度大小
+    plt.tick_params(axis='x', labelsize=18)  # 调整X轴标注点大小
+    plt.tick_params(axis='y', labelsize=18)  # 调整Y轴标注点大小
     plt.show()
 
 
@@ -117,13 +123,16 @@ def weather_statistics():
     fig, axes = plt.subplots(nrows=1, ncols=1, figsize=(8, 6))
     # 年份统计
     weather_condition.plot(kind='bar')
-    axes.set_title('Number of Collisions in Weathers')
-    axes.set_xlabel('Weather')
-    axes.set_ylabel('Number of Collisions')
+    axes.set_title('Number of Collisions in Weathers', fontsize=18)
+    axes.set_xlabel('Weather', fontsize=18)
+    axes.set_ylabel('Number of Collisions', fontsize=18)
     # 在每个柱上显示数据
     for i, value in enumerate(weather_condition):
         axes.text(i, value, str(value), ha='center', va='bottom')
-    axes.set_xticklabels(weather_condition.index, rotation=30)
+    axes.set_xticklabels(weather_condition.index, rotation=20)
+    # 调整刻度大小
+    plt.tick_params(axis='x', labelsize=14)  # 调整X轴标注点大小
+    plt.tick_params(axis='y', labelsize=24)  # 调整Y轴标注点大小
     plt.show()
 
 
@@ -175,5 +184,5 @@ def predict_severity():
 
 # location_statistics()
 # time_statistics()
-# weather_statistics()
-predict_severity()
+weather_statistics()
+# predict_severity()
