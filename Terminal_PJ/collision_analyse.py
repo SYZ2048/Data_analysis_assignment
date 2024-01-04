@@ -23,7 +23,6 @@ from sklearn.impute import SimpleImputer
 from sklearn.ensemble import RandomForestClassifier
 from collections import Counter
 
-
 pd.options.mode.chained_assignment = None  # default='warn'
 plt.rcParams['font.sans-serif'] = ['SimHei']  # 用来设置字体样式以正常显示中文标签（黑体）
 plt.rcParams['axes.unicode_minus'] = False  # 正确输出负数
@@ -78,9 +77,23 @@ def location_statistics():
     # 删除latitude和longitude列中含有空值的行
     position.dropna(subset=['latitude', 'longitude'], inplace=True)
 
+    # 加利福尼亚州大城市的经纬度位置
+    cities = {
+        'Los Angeles': (-118.2437, 34.0522),
+        'San Diego': (-117.1611, 32.7157),
+        'San Jose': (-121.8863, 37.3382),
+        'San Francisco': (-122.4194, 37.7749),
+        'Fresno': (-119.7871, 36.7378),
+        'Sacramento': (-121.4944, 38.5816)
+    }
+
     # 可视化
     fig, ax = plt.subplots()
-    ax.scatter(position['longitude'], position['latitude'], s=5)
+    ax.scatter(position['longitude'], position['latitude'], s=3)
+    for city, (lon, lat) in cities.items():
+        ax.scatter(lon, lat, color='black', zorder=5)
+        ax.text(lon, lat+0.2, city, color='black', fontsize=12, ha='center', va='center')
+
     # 设置标签
     ax.set_xlabel('Longitude')
     ax.set_ylabel('Latitude')
@@ -148,78 +161,16 @@ def predict_severity():
 
     # 特征和目标变量
     X = severity[features]
-    y = severity[target].apply(lambda x: 1 if x > 0 else 0)  # 假设 fatal 列需要转换为二元标签
+    y = severity[target].apply(lambda x: 1 if x > 0 else 0)  # 转换为二元标签
 
     # 训练
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
     pipeline.fit(X_train, y_train)
     predictions = pipeline.predict(X_test)
-    print(Counter(predictions)) # Counter({0: 55726, 1: 11})
+    print(Counter(predictions))  # Counter({0: 55726, 1: 11})
     print(Counter(y_test))  # Counter({0: 53988, 1: 1749})
-    # 输出预测结果的评估
+
     print(classification_report(y_test, predictions))
-
-
-
-    # severity['killed_victims'] = severity['killed_victims'].astype(float)
-    # fatal = np.array([1 if x > 0 else 0 for x in severity['killed_victims']])
-    #
-    # # lighting
-    # dark = ['dark with no street lights', 'dark with street lights not functioning']
-    # mid = ['dark with street lights', 'dusk or dawn']
-    # light = ['daylight']
-    # lighting = np.zeros(len(severity))
-    # for i, x in enumerate(severity['lighting']):
-    #     if x in dark:
-    #         lighting[i] = 2
-    #     elif x in mid:
-    #         lighting[i] = 1
-    #     elif x in light:
-    #         lighting[i] = 0
-    #
-    # # road_surface
-    # road_surface = np.zeros(len(severity))
-    # for i, x in enumerate(severity['road_surface']):
-    #     if x == 'dry':
-    #         road_surface[i] = 0
-    #     elif x == 'wet':
-    #         road_surface[i] = 1
-    #     elif x == 'slippery':
-    #         road_surface[i] = 2
-    #     elif x == 'snowy':
-    #         road_surface[i] = 3
-    #     else:
-    #         road_surface[i] = 4
-    #
-    # # alcohol
-    # alcohol = np.array([1 if x == '1.0' else 0 for x in severity['alcohol_involved']])
-    #
-    # # pedestrian collision
-    # pedestrian = np.array([1 if x == '1.0' else 0 for x in collisions['pedestrian_collision']])
-    #
-    # # control device:
-    # devices = ['functioning', 'none']
-    # cd = np.array([1 if x in devices else 0 for x in collisions['control_device']])
-    #
-    # # 将特征组合成一个矩阵
-    # features = np.column_stack((alcohol, road_surface, lighting, pedestrian, cd))
-    #
-    # # 划分训练集和测试集
-    # # test_size=0.3 表示30%的数据用作测试集，70%用作训练集
-    # # random_state 是随机数生成器的种子，确保每次运行代码时分割方式相同
-    # X_train, X_test, y_train, y_test = train_test_split(features, fatal, test_size=0.25, random_state=42)
-    #
-    # # 创建逻辑回归模型
-    # model = LogisticRegression()
-    # model.fit(X_train, y_train)
-    # predictions = model.predict(X_test)
-    # print((predictions == 0).sum())
-    # print((predictions == 1).sum())
-    #
-    #
-    # # 输出预测结果的评估
-    # print("Classification Report:")
-    # print(classification_report(y_test, predictions))
 
 
 # location_statistics()

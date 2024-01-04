@@ -70,19 +70,19 @@ def factors2injury_degree():
     plt.title('Correlation Analysis')
     plt.xticks(rotation=0)
     plt.yticks(rotation=20)
-    # plt.show()
+    plt.show()
 
     # 卡方检验
     # 创建列联表
-    # for column in factor:
-    #     contingency_table = pd.crosstab(injury_factors[column][0:10000],
-    #                                     injury_factors['victim_degree_of_injury'][0:10000])
-    #     # 执行卡方检验
-    #     chi2, p, dof, expected = chi2_contingency(contingency_table)
-    #
-    #     # 输出卡方检验的结果
-    #     print("Chi2 Statistic:", chi2)
-    #     print("P-value:", p)
+    for column in factor:
+        contingency_table = pd.crosstab(injury_factors[column][0:10000],
+                                        injury_factors['victim_degree_of_injury'][0:10000])
+        # 执行卡方检验
+        chi2, p, dof, expected = chi2_contingency(contingency_table)
+
+        # 输出卡方检验的结果
+        print("Chi2 Statistic:", chi2)
+        print("P-value:", p)
     # result
     # Chi2
     # Statistic: 40000.0
@@ -110,5 +110,5 @@ def factors2injury_degree():
     # P - value: 0.0
 
 
-# victim_position()
+victim_position()
 # factors2injury_degree()

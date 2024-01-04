@@ -11,39 +11,41 @@
 import pandas as pd
 import sqlite3
 
-# Connect to SQLite database
-filename = './traffic_data/switrs.sqlite'   # # table: case_ids\collisions\victims\parties
-conn = sqlite3.connect(filename)
 
-# Create a cursor object 游标
-cursor = conn.cursor()
+def data_load():
+    # Connect to SQLite database
+    filename = './traffic_data/switrs.sqlite'  # # table: case_ids\collisions\victims\parties
+    conn = sqlite3.connect(filename)
 
-# cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
-# cursor.execute("SELECT * FROM collisions")
-# # Fetch all rows from the query
-# rows = cursor.fetchall()
+    # Create a cursor object 游标
+    cursor = conn.cursor()
 
-# 只选取摩托车交通事故中的参与方
-parties_query = " SELECT * FROM parties WHERE case_id IN \
-(SELECT case_id FROM collisions WHERE motorcycle_collision == 1)"
+    # cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+    # cursor.execute("SELECT * FROM collisions")
+    # # Fetch all rows from the query
+    # rows = cursor.fetchall()
 
-# 只选取摩托车交通事故中的受害人
-victims_query = " SELECT * FROM victims WHERE case_id IN \
-(SELECT case_id FROM collisions WHERE motorcycle_collision == 1)"
+    # 只选取摩托车交通事故中的参与方
+    parties_query = " SELECT * FROM parties WHERE case_id IN \
+    (SELECT case_id FROM collisions WHERE motorcycle_collision == 1)"
 
-# 只选取摩托车交通事故
-collisions_query = "SELECT * FROM collisions WHERE motorcycle_collision == 1"
+    # 只选取摩托车交通事故中的受害人
+    victims_query = " SELECT * FROM victims WHERE case_id IN \
+    (SELECT case_id FROM collisions WHERE motorcycle_collision == 1)"
 
-# Read the data
-collisions = pd.read_sql_query(collisions_query, conn)
-parties = pd.read_sql_query(parties_query, conn)
-victims = pd.read_sql_query(victims_query, conn)
+    # 只选取摩托车交通事故
+    collisions_query = "SELECT * FROM collisions WHERE motorcycle_collision == 1"
 
-# 将选取的摩托车事故信息保存为csv，便于后续读取
-filepath = './traffic_data/'
-collisions.to_csv(filepath + 'collisions.csv', index=False)
-parties.to_csv(filepath + 'parties.csv', index=False)
-victims.to_csv(filepath + 'victims.csv', index=False)
+    # Read the data
+    collisions = pd.read_sql_query(collisions_query, conn)
+    parties = pd.read_sql_query(parties_query, conn)
+    victims = pd.read_sql_query(victims_query, conn)
 
-# Close the connection
-conn.close()
+    # 将选取的摩托车事故信息保存为csv，便于后续读取
+    filepath = './traffic_data/'
+    collisions.to_csv(filepath + 'collisions.csv', index=False)
+    parties.to_csv(filepath + 'parties.csv', index=False)
+    victims.to_csv(filepath + 'victims.csv', index=False)
+
+    # Close the connection
+    conn.close()
